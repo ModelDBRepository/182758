@@ -1,0 +1,49 @@
+<html>
+
+This is the readme for the models associated with the paper:
+<p/> 
+ Terman D, Rubin JE, Yew AC, Wilson CJ (2002)<br/> Activity patterns in a
+ model for the subthalamopallidal network of the basal ganglia. <br/>
+<a href="http://www.jneurosci.org/content/22/7/2963.full">J Neurosci</a> 22:2963-76
+
+<p/> 
+The xpp files were provided by David Terman, and the partial NEURON
+implementation was provided by Taylor Malone.
+<p/> 
+xpp <a href="http://www.math.pitt.edu/~bard/xpp/xpp.html">http://www.math.pitt.edu/~bard/xpp/xpp.html</a>and NEURON <a href="https://neuron.yale.edu/neuron/">https://neuron.yale.edu/neuron/</a> simulation environments are each freely available.
+<p/>
+To run the xpp code, download and extract this archive.
+
+
+Figure 3 was created with episodic.ode. Run with linux/unix commands like<br/>
+xppaut episodic.ode<br/>
+Then select Initial Conds.-> Go and you should see a graph like.<br/>
+<img src="./episodic.png" alt="episodic"><br/>
+which is similar to the STN cells in figure 3c.
+<p/>
+
+Figure 5 was created from cluster.ode. Run cluster with linux/unix commands like<br/>
+xppaut cluster.ode<br/>
+Select Xi vs t and enter V1.  Then select Initial Conds.-> Go and you should see a graph like.<br/>
+<img src="./cluster.png" alt="cluster"><br/>
+which is similar to the STN cells in figure 5c in the paper.
+<p/>
+Figure 7 was created from continuous.ode. Run with linux/unix commands like<br/>
+xppaut continuous.ode<br/>
+Then select Initial Conds.-> Go and you should see a graph like.<br/>
+<img src="./continuous.png" alt="continuous"><br/>
+which is similar to the STN cells in figure 7c in the paper.
+<p/>
+
+The NEURON code was created by Taylor Malone.  Figures 1, 2, and 3c are reproduced however there are discrepancies with the network runs. We invite the modeling community to help us correct and/or finish the NEURON implementation.
+<p/>
+To run the NEURON implementation, compile the mod files (see <a href="https://senselab.med.yale.edu/ModelDB/NEURON_DwnldGuide.cshtml">https://senselab.med.yale.edu/ModelDB/NEURON_DwnldGuide.cshtml</a> for more help if necessary.
+<p/>
+In linux/unix, for example:<br/>
+cd nrnfiles</br>
+nrnivmodl<br/>
+python -i Figures/Fig_1a.py<br/>
+produces the graph<br/>
+<img src="./nrnfiles/Figures/Figure 1A.png" alt="Fig 1a">
+<br/>
+</html>

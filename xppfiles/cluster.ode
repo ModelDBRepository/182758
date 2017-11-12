@@ -1,0 +1,240 @@
+# STRUCTURED SPARSELY CONNECTED NETWORK 4/10/02
+# Network of 8 STN & 8 GPE cells.
+# Pruduces Nice clusters.
+# Used to generate Figure 5 in J. Neuro paper.
+# Off-center architecture from GPe to STN, footprint 5: skips 3 in center
+# Each GPe cells receives input from one STN cell and its
+# nearest neighbor GPe cells. Periodic boundary conditions.
+
+
+########  STN Parameters  #######
+
+p gl=2.25,gna=37.5,gk=45,gahp=9.,gca=.5,gt=.5
+p vl=-60,vna=55.,vk=-80.,vca=140.
+p thetam=-30,sigmam=-15,thetah=-39,sigmah=3.1
+p thetan=-32.,sigman=-8.,thetar=-67,sigmar=2.
+p thetaa=-63.,sigmaa=-7.8,thetab=.4,sigmab=-.1
+p thetas=-39,sigmas=-8
+p tauh0=1,tauh1=500.,thh=-57.,sigmaht=3.,phi=.75
+p taun0=1,taun1=100.,thn=-80.,sigmant=26.
+p taur0=40,taur1=17.5,thr=68,sigmart=2.2,phir=.2
+p k1=15.,eps=5e-05
+p kca=22.5
+p i[1..16]=0
+p alpha=5,beta=1.,thetag=30.,gGtoS=2.25,vGtoS=-85
+p thetH=-39,sigmH=-8
+
+
+#######  GPe Parameters  #######
+
+p gnag=120.,gkg=30.,gahpg=30.,gtg=.5,gcag=.15,glg=.1
+p vnag=55.,vkg=-80.,vcag=120.,vlg=-55.
+p thmg=-37.,sigmg=-10.
+p thhg=-58,sighg=12
+p thng=-50.,signg=-14.
+p thrg=-70.,sigrg=2.,taurg=30.
+p thag=-57.,sigag=-2.,thsg=-35.,sigsg=-2.
+p tauhg0=.05,tauhg1=.27,thhgt=-40,shg=12
+p taung0=.05,taung1=.27,thngt=-40,sng=12
+p k1g=30.,kcag=20.,epsg=0.0001
+p phirg=1,phing=.05,phihg=.05
+p ig[1..16]=-1.0
+p gStoG=0.3,vStoG=0,alphag=2,betag=.04,thetagg=20
+p vGtoG=-85,gGtoG=0.1
+p thetHg=-57,sigmHg=-2
+
+
+#######  STN Functions  #######
+
+minf(v)=1./(1.+exp((v-thetam)/sigmam))
+hinf(v)=1./(1.+exp((v-thetah)/sigmah))
+ninf(v)=1./(1.+exp((v-thetan)/sigman))
+rinf(v)=1/(1+exp((v-thetar)/sigmar))
+ainf(v)=1/(1+exp((v-thetaa)/sigmaa))
+binf(r)=1/(1+exp((r-thetab)/sigmab))-1/(1+exp(-thetab/sigmab))
+sinf(v)=1./(1.+exp((v-thetas)/sigmas))
+tauh(v)=tauh0+tauh1/(1+exp((v-thh)/sigmaht))
+taun(v)=taun0+taun1/(1+exp((v-thn)/sigmant))
+taur(v)=taur0+taur1/(1+exp((v-thr)/sigmart))
+Hin(v)=1/(1+exp((v-thetH)/sigmH))
+
+
+####### GPe Functions  #######
+#synaptic infinity function is abbreviated Hing
+
+minfg(v)=1./(1.+exp((v-thmg)/sigmg))
+hinfg(v)=1/(1+exp((v-thhg)/sighg))
+ninfg(v)=1./(1.+exp((v-thng)/signg))
+rinfg(v)=1/(1+exp((v-thrg)/sigrg))
+ainfg(v)=1/(1+exp((v-thag)/sigag))
+sinfg(v)=1/(1+exp((v-thsg)/sigsg))
+tauhg(v)=tauhg0+tauhg1/(1+exp((v-thhgt)/shg))
+taung(v)=taung0+taung1/(1+exp((v-thngt)/sng))
+Hing(v)=1/(1+exp((v-thetHg)/sigmHg))
+
+
+####### STN Currents  #######
+
+il(v)=gl*(v-vl)
+ina(v,h)=gna*(minf(v))^3*h*(v-vna)
+ik(v,n)=gk*n^4*(v-vk)
+iahp(v,ca)=gahp*(v-vk)*ca/(ca+k1)
+ica(v)=gca*((sinf(v))^2)*(v-vca)
+it(v,r)=gt*(ainf(v)**3)*(binf(r)^2)*(v-vca)
+isyn(v,s)=gGtoS*s*(v-vGtoS)
+curr(v,h,n,ca,r)=il(v)+ina(v,h)+ik(v,n)+iahp(v,ca)+ica(v)+it(v,r)
+
+
+#######  GPe Currents  #######
+
+ilg(v)=glg*(v-vlg)
+inag(v,h)=gnag*(minfg(v)^3)*h*(v-vnag)
+ikg(v,n)=gkg*(n^4)*(v-vkg)
+iahpg(v,ca)=gahpg*(v-vkg)*ca/(ca+k1g)
+icag(v)=gcag*((sinfg(v))^2)*(v-vcag)
+itg(v,r)=gtg*(ainfg(v)^3)*r*(v-vcag)
+isyng(vg,s)=gStoG*s*(vg-vStoG)
+isyngg(vg,s)=gGtoG*s*(vg-vGtoG)
+currg(v,h,n,ca,r)=itg(v,r)+inag(v,h)+ikg(v,n)+ilg(v)+iahpg(v,ca)+icag(v)
+
+
+####### STN initial conditions  #######
+i v[1..2]=-77
+i h[1..2]=0.19
+i n[1..2]=0.15
+i r[1..2]=0.23
+i ca[1..2]=0.06
+i s[1..2]=.0
+i v[3..4]=-53.2
+i h[3..4]=0.1
+i n[3..4]=0.45
+i r[3..4]=0.6
+i ca[3..4]=0.12
+i s[3..4]=.44
+i v[5..6]=-77
+i h[5..6]=0.19
+i n[5..6]=0.15
+i r[5..6]=0.23
+i ca[5..6]=0.06
+i s[5..6]=.0
+i v[7..8]=-53.2
+i h[7..8]=0.1
+i n[7..8]=0.45
+i r[7..8]=0.6
+i ca[7..8]=0.12
+i s[7..8]=.44
+
+
+#######  GPE initial conditions  #######
+i vg[1..2]=-95.
+i ng[1..2]=.04
+i hg[1..2]=.95
+i ca[1..2]=0.06
+i rg[1..2]=.9
+i vg[3..4]=-77.
+i ng[3..4]=.78
+i hg[3..4]=.2
+i cag[3..4]=0.035
+i rg[3..4]=0.9
+i sg[1..2]=0.09
+i sg[3..4]=.5
+i vg[5..6]=-95.
+i ng[5..6]=.04
+i hg[5..6]=.95
+i ca[5..6]=0.06
+i rg[5..6]=.9
+i vg[7..8]=-77.
+i ng[7..8]=.78
+i hg[7..8]=.2
+i cag[7..8]=0.035
+i rg[7..8]=0.9
+i sg[5..6]=0.09
+i sg[7..8]=.5
+
+
+
+#######  STN Equations  #######
+
+v1'=-(curr(v1,h1,n1,ca1,r1))-(isyn(v1,sg3)+isyn(v1,sg7))+i1
+h1'=phi*( hinf(v1)-h1 )/tauh(v1)
+n1'=phi*( ninf(v1)-n1 )/taun(v1)
+r1'=phir*(rinf(v1)-r1)/taur(v1)
+ca1'=phi*eps*(-gca*((sinf(v1))^2)*(v1-vca)-it(v1,r1) - kca*ca1)
+s1'=alpha*(1-s1)*Hin(v1-thetag)-beta*s1
+
+v2'=-(curr(v2,h2,n2,ca2,r2))-(isyn(v2,sg4)+isyn(v2,sg8))+i2
+h2'=phi*( hinf(v2)-h2)/tauh(v2)
+n2'=phi*( ninf(v2)-n2)/taun(v2)
+r2'=phir*(rinf(v2)-r2)/taur(v2)
+ca2'=phi*eps*(-gca*((sinf(v2))^2)*(v2-vca)-it(v2,r2) - kca*ca2)
+s2'=alpha*(1-s2)*Hin(v2-thetag)-beta*s2
+
+v3'=-(curr(v3,h3,n3,ca3,r3))-(isyn(v3,sg5)+isyn(v3,sg1))+i3
+h3'=phi*( hinf(v3)-h3)/tauh(v3)
+n3'=phi*( ninf(v3)-n3)/taun(v3)
+r3'=phir*(rinf(v3)-r3)/taur(v3)
+ca3'=phi*eps*(-gca*((sinf(v3))^2)*(v3-vca)-it(v3,r3) - kca*ca3)
+s3'=alpha*(1-s3)*Hin(v3-thetag)-beta*s3
+
+v4'=-(curr(v4,h4,n4,ca4,r4))-(isyn(v4,sg6)+isyn(v4,sg2))+i4
+h4'=phi*( hinf(v4)-h4)/tauh(v4)
+n4'=phi*( ninf(v4)-n4)/taun(v4)
+r4'=phir*(rinf(v4)-r4)/taur(v4)
+ca4'=phi*eps*(-gca*((sinf(v4))^2)*(v4-vca)-it(v4,r4) - kca*ca4)
+s4'=alpha*(1-s4)*Hin(v4-thetag)-beta*s4
+
+v5'=-(curr(v5,h5,n5,ca5,r5))-(isyn(v5,sg7)+isyn(v5,sg3))+i5
+h5'=phi*( hinf(v5)-h5)/tauh(v5)
+n5'=phi*( ninf(v5)-n5)/taun(v5)
+r5'=phir*(rinf(v5)-r5)/taur(v5)
+ca5'=phi*eps*(-gca*((sinf(v5))^2)*(v5-vca)-it(v5,r5) - kca*ca5)
+s5'=alpha*(1-s5)*Hin(v5-thetag)-beta*s5
+
+v6'=-(curr(v6,h6,n6,ca6,r6))-(isyn(v6,sg8)+isyn(v6,sg4))+i6
+h6'=phi*( hinf(v6)-h6)/tauh(v6)
+n6'=phi*( ninf(v6)-n6)/taun(v6)
+r6'=phir*(rinf(v6)-r6)/taur(v6)
+ca6'=phi*eps*(-gca*((sinf(v6))^2)*(v6-vca)-it(v6,r6) - kca*ca6)
+s6'=alpha*(1-s6)*Hin(v6-thetag)-beta*s6
+
+v7'=-(curr(v7,h7,n7,ca7,r7))-(isyn(v7,sg1)+isyn(v7,sg5))+i7
+h7'=phi*( hinf(v7)-h7)/tauh(v7)
+n7'=phi*( ninf(v7)-n7)/taun(v7)
+r7'=phir*(rinf(v7)-r7)/taur(v7)
+ca7'=phi*eps*(-gca*((sinf(v7))^2)*(v7-vca)-it(v7,r7) - kca*ca7)
+s7'=alpha*(1-s7)*Hin(v7-thetag)-beta*s7
+
+v8'=-(curr(v8,h8,n8,ca8,r8))-(isyn(v8,sg2)+isyn(v8,sg6))+i8
+h8'=phi*( hinf(v8)-h8)/tauh(v8)
+n8'=phi*( ninf(v8)-n8)/taun(v8)
+r8'=phir*(rinf(v8)-r8)/taur(v8)
+ca8'=phi*eps*(-gca*((sinf(v8))^2)*(v8-vca)-it(v8,r8) - kca*ca8)
+s8'=alpha*(1-s8)*Hin(v8-thetag)-beta*s8
+
+
+#######  GPe Equations  #######
+
+vg1'=-currg(vg1,hg1,ng1,cag1,rg1)-isyng(vg1,s1)+ig1-isyngg(vg1,sg2+sg8)
+vg2'=-currg(vg2,hg2,ng2,cag2,rg2)-isyng(vg2,s2)+ig2-isyngg(vg2,sg1+sg3)
+vg3'=-currg(vg3,hg3,ng3,cag3,rg3)-isyng(vg3,s3)+ig3-isyngg(vg3,sg2+sg4)
+vg4'=-currg(vg4,hg4,ng4,cag4,rg4)-isyng(vg4,s4)+ig4-isyngg(vg4,sg3+sg5)
+vg5'=-currg(vg5,hg5,ng5,cag5,rg5)-isyng(vg5,s5)+ig5-isyngg(vg5,sg4+sg6)
+vg6'=-currg(vg6,hg6,ng6,cag6,rg6)-isyng(vg6,s6)+ig6-isyngg(vg6,sg5+sg7)
+vg7'=-currg(vg7,hg7,ng7,cag7,rg7)-isyng(vg7,s7)+ig7-isyngg(vg7,sg6+sg8)
+vg8'=-currg(vg8,hg8,ng8,cag8,rg8)-isyng(vg8,s8)+ig8-isyngg(vg8,sg1+sg7)
+
+ng[1..8]'= phing*(ninfg(vg[j])-ng[j])/taung(vg[j])
+hg[1..8]'= phihg*(hinfg(vg[j])-hg[j])/tauhg(vg[j])
+rg[1..8]'=phirg*(rinfg(vg[j])-rg[j])/taurg
+cag[1..8]'=epsg*(-icag(vg[j])-itg(vg[j],rg[j]) - kcag*cag[j])
+sg[1..8]'=alphag*(1-sg[j])*Hing(vg[j]-thetagg)-betag*sg[j]
+
+# NUMERICS 
+@ dt=.2,total=999,meth=qualrk,xp=t,yp=v,xlo=0,xhi=1000,ylo=-80,yhi=20.,bound=5000
+
+done
+
+
+
+
+

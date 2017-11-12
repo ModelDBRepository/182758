@@ -1,0 +1,151 @@
+# STRUCTURED, TIGHTLY CONNECTED ARCHITECTURE 4/10/02
+# Produces nice waves. 10 STN and GPe cells.
+# Used to generate Figure 7 in J. Neuro paper.
+# Each STN cell receives input from 5 GPe cells.
+# Each GPe cell receives input from 3 STN cells.
+# There is all to all coupling among GPe cells.
+# Periodic boundary conditions.
+
+
+########  STN Parameters  #######
+
+p vl=-60,vna=55.,vk=-80.,thetam=30,sigmam=15
+p gl=2.25,gna=37.5,gk=45,tn=1.,th=0.05
+p gahp=9.,gca=.5,vca=140.,k1=15.,eps=5e-05
+p kca=22.5,thetas=39.,sigmas=8.,xp=1.,i=0.
+p thetah=-39,sigmah=3.1,thetan=-32.,sigman=-8.
+p taun0=1,taun1=100.,thn=80.,sigmant=26.
+p tauh0=1,tauh1=500,thh=57.,sigmaht=3.,phi=.75
+p thetaa=-63.,sigmaa=-7.8,gt=.5,phir=.5
+p thetar=-67,sigmar=2.,taur0=7.1,taur1=17.5,thr=-68,sigmart=2.2
+###############################
+#These parameters are not needed.
+p eps1=.01
+p root1=-60,root2=-40,root3=-10,root4=-35,add=0.6
+p scale=10000.,gd=1.0
+###############################
+p alpha=5,beta=1.,ab=-30.
+p gGtoS=5,vGtoS=-100
+p thetab=.25,sigmab=-.07
+
+
+#######  GPe Parameters  #######
+
+p gnag=120.,gkg=30.,gahpg=30.,gtg=.5,gcag=.1,glg=.1
+p vnag=55.,vkg=-80.,vcag=120.,vlg=-55.
+p thag=-57.,sigag=2.,thsg=-35.,sigsg=2.
+p thrg=-70.,sigrg=-2.,taurg=30.
+p thmg=-37.,sigmg=10.
+p thng=-50.,signg=14.
+p taun0g=.05,taun1g=.27,thngt=-40,sng=-12
+p thhg=-58,sighg=-12
+p tauh0g=.05,tauh1g=.27,thhgt=-40,shg=-12
+p k1g=30.,kcag=20.,epsg=0.0001
+p phig=1.,phing=.05,phihg=.05
+p iapp=-0.6,gGtoG=1,vGtoG=-100.
+p gStoG=0.03,vStoG=0,alphag=2,betag=.08,abg=-20
+
+
+#######  STN Functions  #######
+
+sinf(v)=1./(1.+exp(-(v+thetas)/sigmas))
+minf(v)=1./(1.+exp(-(v+thetam)/sigmam))
+hinf(v)=1./(1.+exp((v-thetah)/sigmah))
+ninf(v)=1./(1.+exp((v-thetan)/sigman))
+taun(v)=taun0+taun1/(1+exp((v+thn)/sigmant))
+tauh(v)=tauh0+tauh1/(1+exp((v+thh)/sigmaht))
+rinf(v)=1/(1+exp((v-thetar)/sigmar))
+taur(v)=taur0+taur1/(1+exp((v+thr)/sigmart))
+ainf(v)=1/(1+exp((v-thetaa)/sigmaa))
+binf(r)=1/(1+exp((r-thetab)/sigmab))-1/(1+exp(-thetab/sigmab))
+
+
+####### GPe Functions  #######
+
+ainfg(v)=1/(1+exp(-(v-thag)/sigag))
+sinfg(v)=1/(1+exp(-(v-thsg)/sigsg))
+rinfg(v)=1/(1+exp(-(v-thrg)/sigrg))
+minfg(v)=1./(1.+exp(-(v-thmg)/sigmg))
+ninfg(v)=1./(1.+exp(-(v-thng)/signg))
+taung(v)=taun0g+taun1g/(1+exp(-(v-thngt)/sng))
+hinfg(v)=1./(1.+exp(-(v-thhg)/sighg))
+tauhg(v)=tauh0g+tauh1g/(1+exp(-(v-thhgt)/shg))
+
+
+####### STN Currents  #######
+
+il(v)=gl*(v-vl)
+ina(v,h)=gna*(minf(v))^3*h*(v-vna)
+ik(v,n)=gk*n^4*(v-vk)
+iahp(v,ca)=gahp*(v-vk)*ca/(ca+k1)
+ica(v)=gca*((sinf(v))^2)*(v-vca)
+it(v,r)=gt*(ainf(v)**3)*(binf(r)^2)*(v-vca)
+#############################
+#The choice of T-current is a bit unusual.
+#Here we use binf(r) instead of just r.
+#This gives a more acurrate rebound.
+#############################
+isyn1=gGtoS*(sg9+sg10+sg1+sg2+sg3)*(v1-vGtoS)
+isyn2=gGtoS*(sg10+sg1+sg2+sg3+sg4)*(v2-vGtoS)
+isyn3=gGtoS*(sg1+sg2+sg3+sg4+sg5)*(v3-vGtoS)
+isyn4=gGtoS*(sg2+sg3+sg4+sg5+sg6)*(v4-vGtoS)
+isyn5=gGtoS*(sg3+sg4+sg5+sg6+sg7)*(v5-vGtoS)
+isyn6=gGtoS*(sg4+sg5+sg6+sg7+sg8)*(v6-vGtoS)
+isyn7=gGtoS*(sg5+sg6+sg7+sg8+sg9)*(v7-vGtoS)
+isyn8=gGtoS*(sg6+sg7+sg8+sg9+sg10)*(v8-vGtoS)
+isyn9=gGtoS*(sg7+sg8+sg9+sg10+sg1)*(v9-vGtoS)
+isyn10=gGtoS*(sg8+sg9+sg10+sg1+sg2)*(v10-vGtoS)
+
+
+#######  GPe Currents  #######
+
+itg(vg,rg)=gtg*(ainfg(vg)^3)*rg*(vg-vcag)
+inag(vg,hg)=gnag*(minfg(vg)^3)*hg*(vg-vnag)
+ikg(vg,ng)=gkg*(ng^4)*(vg-vkg)
+iahpg(vg,cag)=gahpg*(vg-vkg)*cag/(cag+k1g)
+icag(vg)=gcag*((sinfg(vg))^2)*(vg-vcag)
+ilg(vg)=glg*(vg-vlg)
+
+isyng1=gStoG*(s10+s1+s2)*(vg1-vStoG)
+isyng2=gStoG*(s1+s2+s3)*(vg2-vStoG)
+isyng3=gStoG*(s2+s3+s4)*(vg3-vStoG)
+isyng4=gStoG*(s3+s4+s5)*(vg4-vStoG)
+isyng5=gStoG*(s4+s5+s6)*(vg5-vStoG)
+isyng6=gStoG*(s5+s6+s7)*(vg6-vStoG)
+isyng7=gStoG*(s6+s7+s8)*(vg7-vStoG)
+isyng8=gStoG*(s7+s8+s9)*(vg8-vStoG)
+isyng9=gStoG*(s8+s9+s10)*(vg9-vStoG)
+isyng10=gStoG*(s9+s10+s1)*(vg10-vStoG)
+stot=sg1+sg2+sg3+sg4+sg5+sg6+sg7+sg8+sg9+sg10
+isyngg(vg,sg)=gGtoG*stot*(vg-vGtoG)
+
+
+#######  STN Equations  #######
+
+v[1..10]'=-(il(v[j])+ina(v[j],h[j])+ik(v[j],n[j])+iahp(v[j],ca[j])+ica(v[j])+it(v[j],r[j]))-isyn[j]
+h[1..10]'=phi*( hinf(v[j])-h[j] )/tauh(v[j])
+n[1..10]'=phi*( ninf(v[j])-n[j] )/taun(v[j])
+r[1..10]'=phir*(rinf(v[j])-r[j])/taur(v[j])
+ca[1..10]'=phi*eps*(-ica(v[j])-it(v[j],r[j]) - kca*ca[j])
+s[1..10]'=alpha*(1-s[j])*sinf(v[j]+ab)-beta*s[j]
+
+
+#######  GPe Equations  #######
+
+vg[1..10]'= -(itg(vg[j],rg[j])+inag(vg[j],hg[j])+ikg(vg[j],ng[j])+iahpg(vg[j],cag[j])+icag(vg[j])+ilg(vg[j])) +iapp -isyngg(vg[j],stot)-isyng[j]
+ng[1..10]'= phing*(ninfg(vg[j])-ng[j])/taung(vg[j])
+hg[1..10]'= phihg*(hinfg(vg[j])-hg[j])/tauhg(vg[j])
+rg[1..10]'= phig*(rinfg(vg[j])-rg[j])/taurg
+cag[1..10]'=epsg*(-icag(vg[j])-itg(vg[j],rg[j]) - kcag*cag[j])
+sg[1..10]'=alphag*(1-sg[j])*sinfg(vg[j]+abg)-betag*sg[j]
+
+@ dt=.4,total=1999,meth=qualrk,xp=t,yp=v1,xlo=0,xhi=2000,ylo=-80,yhi=20.,bound=5000
+
+done
+
+
+
+
+
+
+
