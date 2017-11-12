@@ -17,6 +17,7 @@ To run the xpp code, download and extract this archive.
 
 Figure 3 was created with episodic.ode. Run with linux/unix commands like<br/>
 xppaut episodic.ode<br/>
+Then select File->Read set: episodic.ode.set<br/>
 Then select Initial Conds.-> Go and you should see a graph like.<br/>
 <img src="./episodic.png" alt="episodic"><br/>
 which is similar to the STN cells in figure 3c.
@@ -24,12 +25,14 @@ which is similar to the STN cells in figure 3c.
 
 Figure 5 was created from cluster.ode. Run cluster with linux/unix commands like<br/>
 xppaut cluster.ode<br/>
-Select Xi vs t and enter V1.  Then select Initial Conds.-> Go and you should see a graph like.<br/>
+Then select File->Read set: cluster.ode.set<br/>
+Then select Initial Conds.-> Go and you should see a graph like.<br/>
 <img src="./cluster.png" alt="cluster"><br/>
-which is similar to the STN cells in figure 5c in the paper.
+which is similar to the GPe cells in figure 5c in the paper.
 <p/>
 Figure 7 was created from continuous.ode. Run with linux/unix commands like<br/>
 xppaut continuous.ode<br/>
+Then select File->Read set: continuous.ode.set<br/>
 Then select Initial Conds.-> Go and you should see a graph like.<br/>
 <img src="./continuous.png" alt="continuous"><br/>
 which is similar to the STN cells in figure 7c in the paper.
@@ -46,4 +49,5 @@ python -i Figures/Fig_1a.py<br/>
 produces the graph<br/>
 <img src="./nrnfiles/Figures/Figure 1A.png" alt="Fig 1a">
 <br/>
+20171112 update from David Terman: suggestion to use the ode.set files
 </html>
