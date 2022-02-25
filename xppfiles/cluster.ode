@@ -230,7 +230,7 @@ cag[1..8]'=epsg*(-icag(vg[j])-itg(vg[j],rg[j]) - kcag*cag[j])
 sg[1..8]'=alphag*(1-sg[j])*Hing(vg[j]-thetagg)-betag*sg[j]
 
 # NUMERICS 
-@ dt=.2,total=999,meth=qualrk,xp=t,yp=v,xlo=0,xhi=1000,ylo=-80,yhi=20.,bound=5000
+@ dt=.2,total=999,meth=qualrk,xp=t,yp=v1,xlo=0,xhi=1000,ylo=-80,yhi=20.,bound=5000
 
 done
 
